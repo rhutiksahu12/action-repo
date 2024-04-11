@@ -1,0 +1,28 @@
+name: GitHub Actions Webhook
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  send-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Webhook Notification
+        uses: 8398a7/action-webhook@v3
+        with:
+          url: https://your-webhook-receiver-url.com/webhook
+          headers: 
+            Authorization: ${{ secrets.WEBHOOK_TOKEN }}
+          body: |
+            {
+              "action": "${{ github.event_name }}",
+              "author": "${{ github.actor }}",
+              "to_branch": "${{ github.ref_name }}",
+              "from_branch": "${{ github.head_ref }}",
+              "timestamp": "${{ github.event.created_at }}"
+            }
